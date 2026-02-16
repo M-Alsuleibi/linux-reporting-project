@@ -18,6 +18,20 @@ fi
 TOP_PROCS=$(ps -eo pid,user,%cpu,%mem,comm --sort=-%cpu | head -n 6 | tail -n 5)
 
 OUTPUT="/var/www/html/status.html"
+METRICS_DIR="/mnt/metrics"
+TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
+
+# ---- Backup previous report  ----
+
+if [ -f "$OUTPUT" ]; then
+    if mountpoint -q "$METRICS_DIR"; then
+        cp "$OUTPUT" "$METRICS_DIR/status-$TIMESTAMP.html"
+        echo "Previous report archived to $METRICS_DIR"
+    else
+        echo "Warning: $METRICS_DIR not mounted. Skipping archive."
+    fi
+fi
+
 
 echo "Generating system report..."
 
