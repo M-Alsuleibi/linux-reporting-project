@@ -7,7 +7,6 @@ ARCHIVE="$BACKUPS_DIR/metrics-$TS.tar.gz"
 
 # Ensure backups dir exists
 mkdir -p "$BACKUPS_DIR"
-chmod 755 "$BACKUPS_DIR"
 
 # Archive only if metrics dir is mounted
 if ! mountpoint -q "$METRICS_DIR"; then
