@@ -31,4 +31,3 @@ cp "$CRON_SRC" "$CRON_DST"
 chmod 644 "$CRON_DST"
 
 echo "Installed cron job file to $CRON_DST"
-echo "Log directory prepared at $LOG_DIR (owned by $RUN_USER)"
