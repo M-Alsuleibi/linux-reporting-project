@@ -1,47 +1,112 @@
-# Linux Practical Project — System Reporting and Access Control
+# Linux Reporting Project
 
-A Bash-based system metrics reporting service for Rocky/RHEL-like Linux.  
-Generates an HTML system status report and serves it through Apache. Includes optional disk-based retention, archiving, HTTPS, and access control.
+Automated Linux infrastructure lab that demonstrates:
 
-## What it does
-- Generates `/var/www/html/status.html` containing:
-  - Hostname
-  - IP Address
-  - Current Time
-  - CPU usage
-  - Memory usage
-  - Disk usage
-  - Top processes
-- Serves the page via Apache (`httpd`)
-- (Planned) Saves historical copies to `/mnt/metrics`
-- (Planned) Archives reports into `/backups`
-- (Planned) Restricts access: allow Client A, block Client B
-- (Planned) HTTPS via self-signed cert (OpenSSL)
+- Multi-subnet routing
+- Firewall segmentation (Client A allowed, Client B blocked)
+- NAT via router
+- Apache + HTTPS (self-signed)
+- Automated system reporting
+- Cron automation
+- Backup archiving
+- Role-based infrastructure orchestration
 
-## Requirements
-- Rocky Linux 9/10 (or RHEL-like)
+---
 
-## Quick start (on the Main Server)
-1 Clone
+## Architecture Overview
+
+### Network Layout
+
+```
+                    Internet (NAT)
+                            │
+                     ┌──────┴──────┐
+                     │  Router VM  │
+                     └──────┬──────┘
+                            │
+            ┌───────────────┼──────────────-─┐
+            │               │                │
+    ┌───────┴──────┐ ┌──────┴─────-─┐ ┌──────┴─────-─┐
+    │   Client A   │ │   Client B   │ │ Main Server  │
+    │ 172.16.20.10 │ │ 172.16.30.10 │ │ 172.16.10.10 │
+    └──────────────┘ └──────────────┘ └──────────────┘
+```    
+### Firewall Rules
+
+| Source   | Destination | HTTP | HTTPS | Policy  |
+|----------|-------------|------|-------|---------|
+| Client A | Server      | ✅   | ✅    | ALLOW   |
+| Client B | Server      | ❌   | ❌    | DROP    |
+
+- Server firewall default policy: `DROP`
+- Router performs NAT **only** on the uplink interface
+
+---
+
+## Prerequisites
+
+- Rocky Linux / RHEL-based OS
+- Static IP configured per role
+- Gateway configured to point to router
+- Internet access for package installation
+- Root (`sudo`) access
+
+---
+
+## Installation
+
+### 1. Install Git
 ```bash
 sudo dnf install -y git
-sudo mkdir -p /opt/linux-reporting-project
+```
+
+### 2. Clone Into `/opt` (Required Location)
+
+This project expects the repository at `/opt/linux-reporting-project`:
+```bash
+sudo mkdir -p /opt
 sudo git clone https://github.com/M-Alsuleibi/linux-reporting-project.git /opt/linux-reporting-project
 cd /opt/linux-reporting-project
 ```
-2 Install prerequisites (manual for now)
+
+---
+
+## Execution
+
+The project uses role-based orchestration via a single entry point.
+
+### Main Server Setup
 ```bash
-sudo dnf install -y httpd bc
-sudo systemctl enable --now httpd
-sudo systemctl enable --now firewalld
-sudo firewall-cmd --permanent --add-service=http
-sudo firewall-cmd --reload
+sudo ./run.sh server
 ```
-3 Generate the report
+
+### Router Setup
 ```bash
-sudo ./scripts/generate_report.sh
+sudo ./run.sh router
 ```
-4 view it 
-```
-curl http://localhost/status.html
-```
+
+---
+
+## Network Requirements
+
+**Main Server:**
+- Static IP — e.g. `172.16.10.10`
+- Gateway pointing to router — e.g. `172.16.10.1`
+
+**Router:**
+- Interfaces configured for:
+  - `172.16.10.0/24` (Server subnet)
+  - `172.16.20.0/24` (Client A subnet)
+  - `172.16.30.0/24` (Client B subnet)
+  - NAT uplink interface
+
+**Clients (A & B):**
+- Gateway must point to the router
+- Client A: `172.16.20.10`, gateway `172.16.20.1`
+- Client B: `172.16.30.10`, gateway `172.16.30.1`
+
+---
+
+## Future Enhancements
+
+- Environment-variable driven configuration
