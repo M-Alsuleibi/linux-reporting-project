@@ -3,4 +3,5 @@
 *.tmp
 backups/
 metrics/
-draft.md
+*.env
+*lib.sh
