@@ -1,5 +1,7 @@
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+HOME=/
 
 */10 * * * * reporter /opt/linux-reporting-project/scripts/generate_report.sh >> /var/log/linux-reporting-project/generate.log 2>&1
 0 */3 * * * reporter /opt/linux-reporting-project/scripts/archive_reports.sh >> /var/log/linux-reporting-project/archive.log 2>&1
+
