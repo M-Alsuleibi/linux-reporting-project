@@ -1,4 +1,8 @@
 #!/bin/bash
+set -euo pipefail
+
+dnf install -y bc procps-ng iproute 2>/dev/null || true
+
 HOSTNAME=$(hostname)
 IP_ADDRESS=$(ip -4 addr show ens160 | awk '/inet / {print $2}' | cut -d/ -f1)
 CURRENT_TIME=$(date)
@@ -30,7 +34,7 @@ if [ -f "$REPORT_PATH" ]; then
         echo "Previous report archived to $METRICS_DIR"
     else
         echo "Warning: $METRICS_DIR not mounted. Skipping archive."
-    fi
+    fia
 fi
 
 
