@@ -7,8 +7,8 @@ A_CONN="subnet-A"
 B_CONN="subnet-B"
 S_CONN="subnet-S"
 
+dnf install -y firewalld NetworkManager
 systemctl enable --now firewalld
-
 # Bind zones via NetworkManager (persistent)
 nmcli connection modify "$EXT_CONN" connection.zone public
 nmcli connection modify "$A_CONN" connection.zone trusted
