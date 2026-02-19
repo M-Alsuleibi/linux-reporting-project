@@ -34,7 +34,7 @@ if [ -f "$REPORT_PATH" ]; then
         echo "Previous report archived to $METRICS_DIR"
     else
         echo "Warning: $METRICS_DIR not mounted. Skipping archive."
-    fia
+    fi
 fi
 
 
