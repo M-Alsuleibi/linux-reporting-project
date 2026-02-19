@@ -1,21 +1,23 @@
 #!/bin/bash
 set -euo pipefail
 
-WEB_ROOT="/var/www/html"
-STATUS_FILE="$WEB_ROOT/status.html"
+REPORT_USER="reporter"
+WEB_ROOT="/var/www"
+HTML_ROOT="$WEB_ROOT/html"
+STATUS_FILE="$HTML_ROOT/status.html"
+HTTPD_CONF="/etc/httpd/conf/httpd.conf"
 
-echo "[setup_apache] Installing and enabling Apache..."
-sudo dnf install -y httpd
-sudo systemctl enable --now httpd
+dnf install -y httpd
 
-echo "[setup_apache] Ensuring web root exists..."
-sudo mkdir -p "$WEB_ROOT"
+mkdir -p "$HTML_ROOT"
+chown -R "$REPORT_USER:$REPORT_USER" "$WEB_ROOT"
 
-# Create status.html if missing (permissions handled by setup_user_and_perms.sh later)
-if [ ! -f "$STATUS_FILE" ]; then
-  echo "[setup_apache] Creating empty $STATUS_FILE"
-  sudo touch "$STATUS_FILE"
-fi
+sed -i \
+  -e "s/^User .*/User $REPORT_USER/" \
+  -e "s/^Group .*/Group $REPORT_USER/" \
+  "$HTTPD_CONF"
 
-echo "[setup_apache] Done."
-sudo systemctl is-active httpd
+touch "$STATUS_FILE"
+chown "$REPORT_USER:$REPORT_USER" "$STATUS_FILE"
+
+systemctl enable --now httpd
