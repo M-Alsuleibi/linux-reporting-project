@@ -55,37 +55,15 @@ Automated Linux infrastructure lab that demonstrates:
 
 ## Installation
 
-### 1. Install Git
+### Server
 ```bash
-sudo dnf install -y git
+sudo dnf install -y git && sudo git clone https://github.com/M-Alsuleibi/linux-reporting-project.git /opt/linux-reporting-project && sudo /opt/linux-reporting-project/run.sh
 ```
 
-### 2. Clone Into `/opt` (Required Location)
-
-This project expects the repository at `/opt/linux-reporting-project`:
+### Router
 ```bash
-sudo mkdir -p /opt
-sudo git clone https://github.com/M-Alsuleibi/linux-reporting-project.git /opt/linux-reporting-project
-cd /opt/linux-reporting-project
+sudo dnf install -y git && sudo git clone https://github.com/M-Alsuleibi/linux-reporting-project.git /opt/linux-reporting-project && sudo /opt/linux-reporting-project/run_router.sh
 ```
-
----
-
-## Execution
-
-The project uses role-based orchestration via a single entry point.
-
-### Main Server Setup
-```bash
-sudo ./run.sh server
-```
-
-### Router Setup
-```bash
-sudo ./run.sh router
-```
-
----
 
 ## Network Requirements
 
