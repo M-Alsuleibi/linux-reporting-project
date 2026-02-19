@@ -8,6 +8,16 @@ FSTYPE_EXPECTED="xfs"
 
 dnf install -y util-linux xfsprogs
 
+mkdir -p "$MOUNTPOINT" "$BACKUPS_DIR"
+
+# Already mounted — nothing to do
+if mountpoint -q "$MOUNTPOINT"; then
+  echo "$MOUNTPOINT is already mounted. Skipping."
+  df -h "$MOUNTPOINT"
+  chown "$REPORT_USER:$REPORT_USER" "$MOUNTPOINT" "$BACKUPS_DIR"
+  exit 0
+fi
+
 # Auto-detect target disk: type=disk, not boot, no mounted partitions
 BOOT_DISK=$(lsblk -no PKNAME "$(findmnt -n -o SOURCE /)")
 BASE_DEVICE=$(lsblk -dpno NAME,TYPE | awk '$2=="disk" {print $1}' | grep -v "^/dev/${BOOT_DISK}$" | while read -r dev; do
@@ -20,15 +30,6 @@ if [ -z "$BASE_DEVICE" ] || [ ! -b "$BASE_DEVICE" ]; then
 fi
 
 echo "Detected base device: $BASE_DEVICE"
-
-mkdir -p "$MOUNTPOINT" "$BACKUPS_DIR"
-
-if mountpoint -q "$MOUNTPOINT"; then
-  echo "$MOUNTPOINT is already mounted."
-  df -h "$MOUNTPOINT"
-  chown "$REPORT_USER:$REPORT_USER" "$MOUNTPOINT" "$BACKUPS_DIR"
-  exit 0
-fi
 
 DEVICE="$(lsblk -pnro NAME,TYPE "$BASE_DEVICE" | awk '$2=="part" {print $1; exit}')"
 
