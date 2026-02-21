@@ -11,8 +11,8 @@ echo "[run] Starting server setup..."
 ./scripts/setup_ssl.sh
 ./scripts/setup_cron.sh
 
-echo "[run] Running initial report as reporter..."
 sudo -u reporter ./scripts/generate_report.sh
+sudo -u reporter ./scripts/archive_reports.sh
 
 echo "Setup complete."
 echo "  curl http://localhost/status.html"
