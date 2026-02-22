@@ -4,7 +4,7 @@ set -euo pipefail
 dnf install -y bc procps-ng iproute 2>/dev/null || true
 
 HOSTNAME=$(hostname)
-IP_ADDRESS=$(ip -4 addr show ens160 | awk '/inet / {print $2}' | cut -d/ -f1)
+IP_ADDRESS=$(hostname -I | awk '{print $1}')
 CURRENT_TIME=$(date)
 CPU_IDLE=$(top -bn1 | awk -F',' '/Cpu\(s\)/ {print $4}' | awk '{print $1}')
 CPU_USAGE=$(echo "100 - $CPU_IDLE" | bc)
